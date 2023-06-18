@@ -11,8 +11,10 @@ tasks:
     init: |
       npm install && npm run build
       gp sync-await docker-build # Wait for the above init to finish
+    command: |
+      gp ports await 27017
       npm run db:seed
-    command: npm run start
+      npm run start
 
 ports: 
   - name: NodeGoat
