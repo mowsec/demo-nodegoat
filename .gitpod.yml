@@ -9,7 +9,7 @@ tasks:
 
   - name: Build and Run NodeGoat
     init: |
-      npm install 
+      npm install && npm run build
       gp sync-await docker-build # Wait for the above init to finish
       npm run db:seed
     command: npm run start

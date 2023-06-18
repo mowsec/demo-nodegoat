@@ -3,21 +3,19 @@ version: "3.7"
 services:
   web:
     build: .
-    command:  sh -c "until nc -z -w 2 mongo 27017 && echo 'mongo is ready for connections' && node artifacts/db-reset.js && npm run contrast; do sleep 2; done"
+    environment:
+      NODE_ENV: 
+      MONGODB_URI: mongodb://mongo:27017/nodegoat
+    command:  sh -c "until nc -z -w 2 mongo 27017 && echo 'mongo is ready for connections' && node artifacts/db-reset.js && npm start; do sleep 2; done"
     ports:
       - "4000:4000"
-    volumes:
-      - ./contrast_security.yaml:/home/node/app/contrast_security.yaml
-      - ./logs:/home/node/app/logs
-    environment: 
-      - MONGODB_URI=mongodb://mongo:27017/nodegoat
     depends_on:
       - mongo
+
   mongo:
     image: mongo:4.4
-    container_name: mongo
     user: mongodb
     expose: 
-      - 270127
+      - 27017
     ports:
       - "27017:27017"
