@@ -1,12 +1,27 @@
-image: gitpod/workspace-node
+
 
 tasks: 
+  - name: Start the MongoDB database
+    init: |
+      docker compose build
+      gp sync-done docker-build
+    command: docker compose up mongo
+
   - name: Build and Run NodeGoat
     init: |
       npm install 
+      gp sync-await docker-build # Wait for the above init to finish
       npm run db:seed
-    command: npm start
+    command: npm run start
 
-vscode:
-  extensions:
-    - muhammad-sammy.csharp
+ports: 
+  - name: NodeGoat
+    port: 4000
+    onOpen: open-preview
+  - name: MongoDB
+    port: 27017
+    onOpen: ignore
+
+# vscode:
+#   extensions:
+#     - 

@@ -14,7 +14,10 @@ services:
     depends_on:
       - mongo
   mongo:
-    image: mongo
+    image: mongo:4.4
     container_name: mongo
+    user: mongodb
+    expose: 
+      - 270127
     ports:
       - "27017:27017"
