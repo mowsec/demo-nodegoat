@@ -1,17 +1,19 @@
-
+image: 
+  file: .gitpod.Dockerfile
 
 tasks: 
-  - name: Start the MongoDB database
+  - name: MongoDB database
     init: |
       docker compose build
       gp sync-done docker-build
     command: docker compose up mongo
 
-  - name: Build and Run NodeGoat
+  - name: NodeGoat application
     init: |
-      npm install && npm run build
+      npm install
       gp sync-await docker-build # Wait for the above init to finish
     command: |
+      open README.md 
       gp ports await 27017
       npm run db:seed
       npm run start

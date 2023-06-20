@@ -19,6 +19,7 @@ NodeGoat is a deliberately vulnerable Node application from OWASP, designed to h
 ## Prerequisites
 
 1. **A Contrast Security Account**: You'll need a Contrast Security account to manage your applications and view vulnerability reports and attack events.
+
    * If you are an existing customer or have a POV evaluation with Contrast, please log in to your existing account.
    * If you are attending a workshop, a signup link will be provided.
    * If you don't yet have an account, you can sign up for our [Community Edition](https://www.contrastsecurity.com/contrast-community-edition) for limited access for one application (supports Java and .NET). [Or get in touch for a demo and free evaluation licence.](https://www.contrastsecurity.com/request-demo)
@@ -109,7 +110,7 @@ You can stop these services at any time by entering `Ctrl + C` in the terminal.
 
 To get started with Contrast, you'll need to download and install the agent packages from the package manager. Use NPM to download the agent for Node applications:
 
-```bash { closeTerminalOnSuccess=false interactive=false }
+```bash { closeTerminalOnSuccess=false interactive=true }
 npm install @contrast/agent
 ```
 
@@ -129,9 +130,15 @@ For more information on configuring the agent, please see:
 
 ### Add a `contrast_security.yaml` file
 
-Add a YAML configuration file for your general agent configuration. This file can either be placed in the applications root directory (`./`) or in the default location for the agent (`/etc/contrast/contrast_security.yaml`).
+Add a YAML configuration file for your general agent configuration. This file can either be placed in the application's root directory (`./`) or in the default location for the agent (`/etc/contrast/contrast_security.yaml`).
 
-Add the following basic configration for your app:
+Create the contrast_security.yaml file:
+
+```yaml
+touch contrast_security.yaml
+```
+
+Copy the following basic configuration into this file for your app:
 
 ```yaml
 application:
@@ -175,9 +182,9 @@ Set the following environment variables, adding your contrast API keys, to compl
 
 ```bash { closeTerminalOnSuccess=false interactive=false }
 gp env CONTRAST__API__URL=eval003.contrastsecurity.com
-gp env CONTRAST__API__USER_NAME=XXXXXXXXXXXXXXXXXXX
 gp env CONTRAST__API__API_KEY=XXXXXXXXXXXXXXXXXXX
 gp env CONTRAST__API__SERVICE_KEY=XXXXXXXXXXXXXXXXXXX
+gp env CONTRAST__API__USER_NAME=XXXXXXXXXXXXXXXXXXX
 ```
 
 ## Starting the app with Contrast
@@ -247,7 +254,6 @@ Runtime Application Self-Protection (RASP) uses instrumentation in a similar way
 To see how this works, we need to change some agent configuration to tell it to run in Protect mode.
 
 1. Stop the running application using `Ctrl+C`
-
 2. Edit the `contrast_security.yaml` file to change the `server.name` and `server.environment` to production values. This will automatically instruct the agent to run in Protect mode.
 
 ```yaml
@@ -259,7 +265,6 @@ server:
 ```
 
 3. Save the file and restart the application.
-
 4. In the Contrast Platform, you'll see that the production column is now showing that Protect is enabled.
 
 ### Attacking the application
