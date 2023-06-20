@@ -24,6 +24,7 @@ ports:
     port: 27017
     onOpen: ignore
 
-# vscode:
-#   extensions:
-#     - 
+vscode:
+  extensions:
+    - amvanbaren.runme
+
