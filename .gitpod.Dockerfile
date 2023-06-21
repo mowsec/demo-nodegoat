@@ -1,6 +1,4 @@
-FROM gitpod/workspace-dotnet
-
-RUN sudo apt-get update && sudo apt-get install 
+FROM gitpod/workspace-full
 
 # Install dependencies for Cypress
 RUN sudo apt-get update \
