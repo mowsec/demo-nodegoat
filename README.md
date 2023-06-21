@@ -18,73 +18,33 @@ NodeGoat is a deliberately vulnerable Node application from OWASP, designed to h
 
 ## Prerequisites
 
-1. **A Contrast Security Account**: You'll need a Contrast Security account to manage your applications and view vulnerability reports and attack events.
+#### A Contrast Security Account
 
-   * If you are an existing customer or have a POV evaluation with Contrast, please log in to your existing account.
-   * If you are attending a workshop, a signup link will be provided.
-   * If you don't yet have an account, you can sign up for our [Community Edition](https://www.contrastsecurity.com/contrast-community-edition) for limited access for one application (supports Java and .NET). [Or get in touch for a demo and free evaluation licence.](https://www.contrastsecurity.com/request-demo)
+You'll need a Contrast Security account to manage your applications and view vulnerability reports and attack events. If you are an existing customer or have a POV evaluation with Contrast, please log in to your existing account. If you are attending a workshop, a sign up link will be provided.
 
-2. **A GitPod Account**: You'll need to sign up to [GitPod.io](gitpod.io) with a GitHub, GitLab or BitBucket account to run the workshop in GitPod. Signup is free.
+You can sign also sign up for our [Community Edition](https://www.contrastsecurity.com/contrast-community-edition) for limited access for one application (supports Java and .NET). [Or get in touch for a demo and free evaluation license.](https://www.contrastsecurity.com/request-demo)
+
+#### Your Contrast Security Agent Keys
+
+Once you've logged in or signed up to the Contrast Security platform, retrieve your agent keys by downloading the YAML configuration file.
+
+Click on the **Add New** button on the top right of the platform and select **Live Application**. Select your preferred language from the dropdown and click the **Download the contrast_security.yaml** link. This will download a YAML file containing your agent keys that you will use later in this workshop.
+
+![Download agent keys](./workshop/download-agent-keys.png)
+
+You can also view your agent keys by clicking on your Profile icon at the top right, selecting **Organization Settings** and then **Agent**.
+
+![View agent keys](./workshop/view-agent-keys.png)
+
+#### A GitPod Account
+
+If you don't already have a GitPod account, you'll need to sign up at [GitPod.io](gitpod.io) with your GitHub account. Signup is free, and it only takes a few minutes. The rest of this workshop will be run in GitPod, which is a cloud-based IDE that runs in your browser.
 
 ## Launch the workshop in GitPod (Recommended)
 
 Click the button below to start the workshop in GitPod, which is preconfigured with everything you need. GitPod will launch VS Code in the browser that you can use to change source code and configuration, run commands in a terminal and view the running application in a preview window.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mowsec/demo-nodegoat)
-
-## Launch the workshop locally
-
-You can also run this workshop locally if you prefer. Clone the repo and perform the usual steps to install dependencies and run the app, before continuing with the rest of the workshop guide below.
-
-<details>
-
-<summary>Installing the workshop locally</summary>
-
-(**WARNING:** The computer running this application will be vulnerable to attacks, please take appropriate precautions.)
-
-1. **Install Node packages and build the application**
-
-```bash
-npm install && npm run build
-```
-
-2. **Run the MongoDB database container using docker compose**
-
-```bash
-docker compose -d up mongo 
-```
-
-3. **Seed the database with initial values**
-
-```bash
-npm run db:seed
-```
-
-4. **Run the application**
-
-```bash
-npm run start
-```
-
-5. **Browse to the application at `localhost:4000`**
-
-</details>
-
-<details>
-
-<summary>Running the workshop locally in docker compose</summary>
-
-Running the workshop in Docker will isolate it from your environment. The Docker images contain all the dependancies required for the workshop. Run the commands below to build the containers and run the app.
-
-1. **Build and run the application and database in docker compose**
-
-```bash
-docker compose up --build
-```
-
-2. **Browse to the application at `localhost:4000`**
-
-</details>
 
 ---
 
@@ -118,10 +78,12 @@ npm install @contrast/agent
 
 Next, we need to configure the Contrast Agent with authentication keys, general configuration (such as logging and proxy configuration), and application specific configuration (such as setting an name, environment and agent mode).
 
-All configuration options can be set in a YAML configuration file and via Environment Variables, and the agent uses this [order of precedence](https://docs.contrastsecurity.com/en/order-of-precedence.html). We recommend setting configuration as follows:
+All configuration options can be set in a YAML configuration file and via Environment Variables, and the agent follows this [order of precedence](https://docs.contrastsecurity.com/en/order-of-precedence.html). We recommend setting configuration as follows:
 
 1. **Environment Variables** for authentication keys and application specific values, or to overwrite a base configuration set in the YAML file.
 2. **YAML configuration file** for general configuration
+
+For this workshop, we'll set all of our configuration in the YAML file for simplicity.
 
 For more information on configuring the agent, please see:
 
@@ -132,59 +94,27 @@ For more information on configuring the agent, please see:
 
 Add a YAML configuration file for your general agent configuration. This file can either be placed in the application's root directory (`./`) or in the default location for the agent (`/etc/contrast/contrast_security.yaml`).
 
-Create the contrast_security.yaml file:
+Either create a new `contrast_security.yaml` file, or copy in the file you downloaded from the Contrast Platform at the start of the workshop.
+
+Add configuration for the following:
+
+* Your Agent authentication and API Keys
+* A unique name for your application and server (e.g. `NodeGoat-Workshop-Taylor`)
+* Any other configuration you want to set, including agent logging
+
+Your `contrast_security.yaml` file should look something like this:
 
 ```yaml
-touch contrast_security.yaml
-```
-
-Copy the following basic configuration into this file for your app:
-
-```yaml
+api:
+  url: https://eval.contrastsecurity.com/Contrast/
+  api_key: TODO
+  service_key: TODO
+  user_name: TODO
 application:
   name: NodeGoat-Workshop-<initials>
 server:
   name: NodeGoat-Workshop-<initials>
   environment: development
-```
-
-You can also add the agent authentication keys in this file too, however it's better if we use environment variables or secrets for that.
-
-<details>
-
-<summary>Adding agent authentication configuration to the YAML file</summary>
-
-Add the following section to your YAML to include the agent authentication keys:
-
-```yaml
-api:
-  url: https://app.contrastsecurity.com/Contrast/
-  api_key: TODO
-  service_key: TODO
-  user_name: TODO
-```
-
-</details>
-
-### Add Environment Variables for application specific configuration
-
-Now we'll add our agent authentication keys and some other configuration values by setting environment variables.
-
-Typically, you would export environment variables by running the following command:
-
-```bash
-export CONTRAST__API__URL=XXXXXXXXXXXXXXXXXXX
-```
-
-However, GitPod provies a way to securely set these environment variables using the `gp env` command. This will save your Contrast environment variables in your GitPod account for this workspace.
-
-Set the following environment variables, adding your contrast API keys, to complete the configuration of the Contrast Agent:
-
-```bash { closeTerminalOnSuccess=false interactive=false }
-gp env CONTRAST__API__URL=eval003.contrastsecurity.com
-gp env CONTRAST__API__API_KEY=XXXXXXXXXXXXXXXXXXX
-gp env CONTRAST__API__SERVICE_KEY=XXXXXXXXXXXXXXXXXXX
-gp env CONTRAST__API__USER_NAME=XXXXXXXXXXXXXXXXXXX
 ```
 
 ## Starting the app with Contrast
@@ -199,9 +129,7 @@ First stop the application using `Ctrl+C` if it is still running.
 node -r @contrast/agent server.js
 ```
 
-<details>
-
-<summary>Adding a script to `package.json`</summary>
+**Optional: Adding a script to `package.json`**
 
 You can also add a command to the scripts section of your application's `package.json` file to add an option to run the app with Contrast:
 
@@ -219,8 +147,6 @@ And then run this script with
 node contrast
 ```
 
-</details>
-
 Browse the running application via the Simple Browser tab.
 
 You can confirm that the application is running with the contrast agent by checking in the Contrast Security Platform to ensure your new application has been registered. Also, some Contrast output will be visible in the logs for the application if it started successfully.
@@ -231,9 +157,11 @@ Interactive Application Security Testing (IAST) works by observing application b
 
 ### Test the application manually
 
-Try logging in to the application using the supplied credentials, create a new account for yourself via the register page and then login and back out. View some of the other pages and functionality in the app.
+Try logging in to the application using the supplied credentials, logging out again, creating a new user for yourself and browsing some of the other pages and functionality in the app.
 
-When you're done exploring the application, look at the Contrast Platform for your applciation to see if any vulnerabilities were detected.
+When you're done exploring the application, look at the Contrast Platform to see if any vulnerabilities were detected. You'll also see any vulnerable libraries that were detected, as well as the route coverage that you've achieved with your manual testing.
+
+![Application Details](./workshop/application-details.png)
 
 ### Test the application with automated tests
 
@@ -282,7 +210,3 @@ You can change the Policy for the application to run in Block mode on the Applic
 In Blocking mode, the agent will raise an exception within the application (500) if a successful attack is detected. THis prevents the attacker from performing any adverse actions against the application.
 
 Enable Blocking mode now and try the attacks again to see how the agent responds.
-
-## Contrast Reporting
-
-Contrast can export vulnerability information and reports in a number of ways.
